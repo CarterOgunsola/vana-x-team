@@ -1,6 +1,7 @@
 import "../styles/index.css";
-import { showBody } from "./animations/starter";
+import { initGenAnimations } from "./animations/general";
 
-showBody();
-
+document.addEventListener("DOMContentLoaded", () => {
+  initGenAnimations();
+});
 console.log("Hello, Vite!");
