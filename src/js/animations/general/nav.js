@@ -9,6 +9,17 @@ export function initNav() {
     childLinks: document.querySelectorAll('[data-drop-nav="child-link"]'),
   };
 
+  // Check if essential elements exist
+  if (
+    !elements.mainWrap ||
+    !elements.mainLink ||
+    !elements.childWrap ||
+    elements.childLinks.length === 0
+  ) {
+    //console.warn("Navigation elements not found in the DOM.");
+    return;
+  }
+
   const animationSettings = {
     duration: 0.6,
     ease: "expo.out",
@@ -27,8 +38,8 @@ export function initNav() {
 
   function updateUI() {
     if (elements.mainLink) {
-        elements.mainLink.setAttribute("aria-expanded", state.isOpen);
-        elements.childWrap.setAttribute("aria-hidden", !state.isOpen);
+      elements.mainLink.setAttribute("aria-expanded", state.isOpen);
+      elements.childWrap.setAttribute("aria-hidden", !state.isOpen);
     }
   }
 
