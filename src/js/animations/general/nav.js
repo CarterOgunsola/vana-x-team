@@ -26,8 +26,10 @@ export function initNav() {
   }
 
   function updateUI() {
-    elements.mainLink.setAttribute("aria-expanded", state.isOpen);
-    elements.childWrap.setAttribute("aria-hidden", !state.isOpen);
+    if (elements.mainLink) {
+        elements.mainLink.setAttribute("aria-expanded", state.isOpen);
+        elements.childWrap.setAttribute("aria-hidden", !state.isOpen);
+    }
   }
 
   function setInitialStates() {
