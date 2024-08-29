@@ -41,6 +41,7 @@ export function initNav() {
       y: 105,
       opacity: 0,
     });
+    console.log("About to updateUI");
     updateUI();
   }
 
