@@ -26,8 +26,11 @@ export function initNav() {
   }
 
   function updateUI() {
-    elements.mainLink.setAttribute("aria-expanded", state.isOpen);
-    elements.childWrap.setAttribute("aria-hidden", !state.isOpen);
+    if() {
+
+      elements.mainLink.setAttribute("aria-expanded", state.isOpen);
+      elements.childWrap.setAttribute("aria-hidden", !state.isOpen);
+    }
   }
 
   function setInitialStates() {
@@ -41,6 +44,7 @@ export function initNav() {
       y: 105,
       opacity: 0,
     });
+    console.log("About to updateUI");
     updateUI();
   }
 
