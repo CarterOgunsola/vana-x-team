@@ -1,5 +1,9 @@
-import { swiper } from "./swiper"
+import { stepFlow } from "./stepFlow";
+import { swiperInit } from "./swiper";
 
 export const initDLPAnimation = () => {
-    swiper()
-}
+  document.addEventListener("DOMContentLoaded", () => {
+    swiperInit(); // Ensure Swiper is initialized on load
+    stepFlow(); // Initiate the step flow logic
+  });
+};
