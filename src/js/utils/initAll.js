@@ -2,6 +2,7 @@ import { initGenAnimations } from "../animations/general";
 import { initHomeAnimations } from "../animations/home";
 import { renderEvents } from "../components/eventRenderer";
 import { getEvents } from "../components/eventList";
+import { initDLPAnimation } from "../animations/dlp";
 
 // General scripts that should run on all pages
 const initGeneralScripts = () => {
@@ -43,7 +44,7 @@ export const initAll = () => {
   } else if (path.includes("/events")) {
     initializeEventList();
   } else if (path.includes("/dlp")) {
-    // initDlpAnimations();
+    initDLPAnimation();
   }
 
   // Add other conditional page initializations here

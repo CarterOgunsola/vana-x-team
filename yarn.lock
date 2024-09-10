@@ -274,7 +274,7 @@ source-map-js@^1.0.2:
 
 split-type@^0.3.4:
   version "0.3.4"
-  resolved "https://registry.npmjs.org/split-type/-/split-type-0.3.4.tgz"
+  resolved "https://registry.yarnpkg.com/split-type/-/split-type-0.3.4.tgz#48b963ab0c65b168d8d03a162ebd4142755c5b55"
   integrity sha512-otEk9vnD8qwfLsk3Lx0gz+qRkNIJCx0mlyL47ImP/DjMuV39d75Lpfwjn9fHteDRz0aoOblSzQjSNT9+Sswxcg==
 
 swiper@^11.1.11:
