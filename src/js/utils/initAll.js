@@ -3,6 +3,7 @@ import { initHomeAnimations } from "../animations/home";
 import { renderEvents } from "../components/eventRenderer";
 import { getEvents } from "../components/eventList";
 import { initDLPAnimation } from "../animations/dlp";
+import { cohortsSwiperInit } from "../animations/general/swiper";
 
 // General scripts that should run on all pages
 const initGeneralScripts = () => {
@@ -39,8 +40,10 @@ export const initAll = () => {
   // Conditional initialization based on page path
   if (path === "/") {
     initHomeAnimations();
+    cohortsSwiperInit();
   } else if (path.includes("/aurora-cohorts")) {
     // initAuroraCohortsAnimations();
+    cohortsSwiperInit();
   } else if (path.includes("/events")) {
     initializeEventList();
   } else if (path.includes("/dlp")) {
