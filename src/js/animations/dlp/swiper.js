@@ -76,7 +76,7 @@ export const swiperInit = () => {
 
     modules: [Navigation, Pagination],
 
-    speed: 701,
+    speed: 700,
 
     direction: "horizontal",
     // loop: true,
