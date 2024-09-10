@@ -171,30 +171,22 @@ export const stepFlow = () => {
       })
       .to(backdrop, {
         opacity: 1,
-        duration: 0.8,
-        ease: "expo.out", // Smooth easing for backdrop opacity
+        duration: 0.5,
+        ease: "expo.out",
       })
-      .fromTo(
+      .to(
         actionWrapper,
-        { x: "100%" }, // Start from off-screen to the right
         {
           x: 0,
-          duration: 1,
-          ease: "expo.out", // Smooth, fast-out easing
+          duration: 0.5,
+          ease: "expo.inOut",
         },
-        "-=0.7" // Overlapping with backdrop fade-in
+        "-=0.3"
       )
-      .to(
-        triggerCloseBtn,
-        {
-          opacity: 1,
-          x: "0vw",
-          duration: 0.8,
-          ease: "expo.out",
-          scale: 1,
-        },
-        "-=0.8"
-      );
+      .to(triggerCloseBtn, {
+        opacity: 1,
+        duration: 0.5,
+      });
 
     const stateStepsObj = JSON.parse(localStorage.getItem("stepObj"));
 
@@ -229,36 +221,26 @@ export const stepFlow = () => {
 
     gTl
       .to(triggerCloseBtn, {
-        opacity: 0,
-        x: "-10vw", // Move close button slightly out before closing
-        duration: 0.4,
-        ease: "expo.out", // Smooth easing for fade-out
-        scale: 0, // Shrink the close button slightly for a smooth effect
+        oapcity: 0,
+        duration: 0.5,
       })
-      .to(
-        actionWrapper,
-        {
-          x: "100%", // Move off-screen to the right
-          duration: 0.8,
-          ease: "expo.out", // Smooth, fast-in easing
-        },
-        "-=0.3" // Slight overlap with the close button animation
-      )
+      .to(actionWrapper, {
+        x: "100%",
+        duration: 0.5,
+      })
       .to(
         backdrop,
         {
           opacity: 0,
-          duration: 0.6,
-          ease: "expo.out", // Smooth fade-out for backdrop
         },
-        "-=0.7" // Overlap with the actionWrapper animation
+        "-0.7"
       )
       .to(
         backdrop,
         {
           display: "none",
         },
-        "-=0.1"
+        "<"
       );
   };
 
