@@ -46,7 +46,7 @@ export const initAll = () => {
     cohortsSwiperInit();
   } else if (path.includes("/events")) {
     initializeEventList();
-  } else if (path.includes("/dlp")) {
+  } else if (path.startsWith("/dlp")) {
     initDLPAnimation();
   }
 
