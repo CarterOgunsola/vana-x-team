@@ -139,13 +139,13 @@ export function initNav() {
       // Close other open dropdowns before opening this one
       navInstances.forEach((otherWrap) => {
         if (otherWrap !== mainWrap) {
-          const otherState =
-            otherWrap
-              .querySelector('[data-drop-nav="main-link"]')
-              ?.getAttribute("aria-expanded") === "true";
-          if (otherState) {
+          const otherMainLink = otherWrap.querySelector(
+            '[data-drop-nav="main-link"]'
+          );
+          if (otherMainLink?.getAttribute("aria-expanded") === "true") {
             const otherElements = {
               mainWrap: otherWrap,
+              mainLink: otherMainLink,
               childWrap: otherWrap.querySelector(
                 '[data-drop-nav="child-wrap"]'
               ),
@@ -153,10 +153,15 @@ export function initNav() {
                 '[data-drop-nav="child-link"]'
               ),
             };
-            closeDropdown.call({
-              elements,
-              state: { isOpen: true, isAnimating: false },
-            });
+            const otherState = { isOpen: true, isAnimating: false };
+
+            // Create a new context with the correct elements and state
+            const closeContext = {
+              elements: otherElements,
+              state: otherState,
+            };
+
+            closeDropdown.call(closeContext);
           }
         }
       });
