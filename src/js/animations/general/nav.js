@@ -2,23 +2,11 @@ import gsap from "gsap";
 import SplitType from "split-type";
 
 export function initNav() {
-  const elements = {
-    mainWrap: document.querySelector('[data-drop-nav="main-wrap"]'),
-    mainLink: document.querySelector('[data-drop-nav="main-link"]'),
-    childWrap: document.querySelector('[data-drop-nav="child-wrap"]'),
-    childLinks: document.querySelectorAll('[data-drop-nav="child-link"]'),
-  };
+  // Get all navigation instances
+  const navInstances = document.querySelectorAll('[data-drop-nav="main-wrap"]');
 
-  // Check if essential elements exist
-  if (
-    !elements.mainWrap ||
-    !elements.mainLink ||
-    !elements.childWrap ||
-    elements.childLinks.length === 0
-  ) {
-    //console.warn("Navigation elements not found in the DOM.");
-    return;
-  }
+  // If no nav instances found, return early
+  if (!navInstances.length) return;
 
   const animationSettings = {
     duration: 0.6,
@@ -26,124 +14,202 @@ export function initNav() {
     stagger: 0.05,
   };
 
-  const state = {
-    isOpen: false,
-    isAnimating: false,
-  };
+  // Initialize each nav instance
+  navInstances.forEach((mainWrap) => {
+    const elements = {
+      mainWrap,
+      mainLink: mainWrap.querySelector('[data-drop-nav="main-link"]'),
+      childWrap: mainWrap.querySelector('[data-drop-nav="child-wrap"]'),
+      childLinks: mainWrap.querySelectorAll('[data-drop-nav="child-link"]'),
+    };
 
-  function setState(newState) {
-    Object.assign(state, newState);
-    updateUI();
-  }
-
-  function updateUI() {
-    if (elements.mainLink) {
-      elements.mainLink.setAttribute("aria-expanded", state.isOpen);
-      elements.childWrap.setAttribute("aria-hidden", !state.isOpen);
+    // Check if essential elements exist for this instance
+    if (
+      !elements.mainLink ||
+      !elements.childWrap ||
+      elements.childLinks.length === 0
+    ) {
+      return;
     }
-  }
 
-  function setInitialStates() {
-    gsap.set(elements.childWrap, {
-      y: 50,
-      opacity: 0,
-      visibility: "hidden",
-      pointerEvents: "none",
-    });
-    gsap.set(elements.childLinks, {
-      y: 105,
-      opacity: 0,
-    });
-    console.log("About to updateUI");
-    updateUI();
-  }
+    const state = {
+      isOpen: false,
+      isAnimating: false,
+    };
 
-  function openDropdown() {
-    if (state.isAnimating || state.isOpen) return;
-    setState({ isAnimating: true });
+    function setState(newState) {
+      Object.assign(state, newState);
+      updateUI();
+    }
 
-    const tl = gsap.timeline({
-      onComplete: () => setState({ isAnimating: false, isOpen: true }),
-    });
+    function updateUI() {
+      if (elements.mainLink) {
+        elements.mainLink.setAttribute("aria-expanded", state.isOpen);
+        elements.childWrap.setAttribute("aria-hidden", !state.isOpen);
+      }
+    }
 
-    tl.set(elements.childWrap, { visibility: "visible", pointerEvents: "auto" })
-      .to(elements.childWrap, {
-        y: 0,
-        opacity: 1,
-        duration: animationSettings.duration,
-        ease: animationSettings.ease,
+    function setInitialStates() {
+      gsap.set(elements.childWrap, {
+        y: 50,
+        opacity: 0,
+        visibility: "hidden",
+        pointerEvents: "none",
+      });
+      gsap.set(elements.childLinks, {
+        y: 105,
+        opacity: 0,
+      });
+      console.log("About to updateUI");
+      updateUI();
+    }
+
+    function openDropdown() {
+      if (state.isAnimating || state.isOpen) return;
+      setState({ isAnimating: true });
+
+      const tl = gsap.timeline({
+        onComplete: () => setState({ isAnimating: false, isOpen: true }),
+      });
+
+      tl.set(elements.childWrap, {
+        visibility: "visible",
+        pointerEvents: "auto",
       })
-      .to(
-        elements.childLinks,
-        {
+        .to(elements.childWrap, {
           y: 0,
           opacity: 1,
           duration: animationSettings.duration,
           ease: animationSettings.ease,
-          stagger: animationSettings.stagger,
-        },
-        "<"
-      );
-  }
+        })
+        .to(
+          elements.childLinks,
+          {
+            y: 0,
+            opacity: 1,
+            duration: animationSettings.duration,
+            ease: animationSettings.ease,
+            stagger: animationSettings.stagger,
+          },
+          "<"
+        );
+    }
 
-  function closeDropdown() {
-    if (state.isAnimating || !state.isOpen) return;
-    setState({ isAnimating: true });
+    function closeDropdown() {
+      if (state.isAnimating || !state.isOpen) return;
+      setState({ isAnimating: true });
 
-    const tl = gsap.timeline({
-      onComplete: () => setState({ isAnimating: false, isOpen: false }),
+      const tl = gsap.timeline({
+        onComplete: () => setState({ isAnimating: false, isOpen: false }),
+      });
+
+      tl.to(elements.childLinks, {
+        y: 105,
+        opacity: 0,
+        duration: animationSettings.duration,
+        ease: animationSettings.ease,
+        stagger: -animationSettings.stagger,
+      })
+        .to(
+          elements.childWrap,
+          {
+            y: 50,
+            opacity: 0,
+            duration: animationSettings.duration,
+            ease: animationSettings.ease,
+          },
+          "<"
+        )
+        .set(elements.childWrap, {
+          visibility: "hidden",
+          pointerEvents: "none",
+        });
+    }
+
+    function toggleDropdown() {
+      if (state.isOpen) {
+        closeDropdown();
+      } else {
+        openDropdown();
+      }
+    }
+
+    function handleMainLinkClick(event) {
+      event.preventDefault();
+      // Close other open dropdowns before opening this one
+      navInstances.forEach((otherWrap) => {
+        if (otherWrap !== mainWrap) {
+          const otherState =
+            otherWrap
+              .querySelector('[data-drop-nav="main-link"]')
+              ?.getAttribute("aria-expanded") === "true";
+          if (otherState) {
+            const otherElements = {
+              mainWrap: otherWrap,
+              childWrap: otherWrap.querySelector(
+                '[data-drop-nav="child-wrap"]'
+              ),
+              childLinks: otherWrap.querySelectorAll(
+                '[data-drop-nav="child-link"]'
+              ),
+            };
+            closeDropdown.call({
+              elements,
+              state: { isOpen: true, isAnimating: false },
+            });
+          }
+        }
+      });
+
+      toggleDropdown();
+    }
+
+    function handleMainWrapLeave() {
+      if (state.isOpen) {
+        closeDropdown();
+      }
+    }
+
+    function handleDocumentClick(event) {
+      if (!elements.mainWrap.contains(event.target) && state.isOpen) {
+        closeDropdown();
+      }
+    }
+
+    // Initialize dropdown
+    setInitialStates();
+    elements.mainLink.addEventListener("click", handleMainLinkClick);
+    elements.mainWrap.addEventListener("mouseleave", handleMainWrapLeave);
+  });
+
+  // Single document click handler for all instances
+  document.addEventListener("click", (event) => {
+    navInstances.forEach((mainWrap) => {
+      if (!mainWrap.contains(event.target)) {
+        const childWrap = mainWrap.querySelector(
+          '[data-drop-nav="child-wrap"]'
+        );
+        const isOpen =
+          mainWrap
+            .querySelector('[data-drop-nav="main-link"]')
+            ?.getAttribute("aria-expanded") === "true";
+
+        if (isOpen) {
+          const elements = {
+            mainWrap,
+            childWrap,
+            childLinks: mainWrap.querySelectorAll(
+              '[data-drop-nav="child-link"]'
+            ),
+          };
+          closeDropdown.call({
+            elements,
+            state: { isOpen: true, isAnimating: false },
+          });
+        }
+      }
     });
-
-    tl.to(elements.childLinks, {
-      y: 105,
-      opacity: 0,
-      duration: animationSettings.duration,
-      ease: animationSettings.ease,
-      stagger: -animationSettings.stagger,
-    })
-      .to(
-        elements.childWrap,
-        {
-          y: 50,
-          opacity: 0,
-          duration: animationSettings.duration,
-          ease: animationSettings.ease,
-        },
-        "<"
-      )
-      .set(elements.childWrap, { visibility: "hidden", pointerEvents: "none" });
-  }
-
-  function toggleDropdown() {
-    if (state.isOpen) {
-      closeDropdown();
-    } else {
-      openDropdown();
-    }
-  }
-
-  function handleMainLinkClick(event) {
-    event.preventDefault();
-    toggleDropdown();
-  }
-
-  function handleMainWrapLeave() {
-    if (state.isOpen) {
-      closeDropdown();
-    }
-  }
-
-  function handleDocumentClick(event) {
-    if (state.isOpen && !elements.mainWrap.contains(event.target)) {
-      closeDropdown();
-    }
-  }
-
-  // Initialize dropdown
-  setInitialStates();
-  elements.mainLink.addEventListener("click", handleMainLinkClick);
-  elements.mainWrap.addEventListener("mouseleave", handleMainWrapLeave);
-  document.addEventListener("click", handleDocumentClick);
+  });
 
   // Nav link animations
   const navLinks = document.querySelectorAll('[data-nav="link"]');
@@ -193,9 +259,24 @@ export function initNav() {
 
   // Clean up function
   return function cleanup() {
-    elements.mainLink.removeEventListener("click", handleMainLinkClick);
-    elements.mainWrap.removeEventListener("mouseleave", handleMainWrapLeave);
-    document.removeEventListener("click", handleDocumentClick);
+    navInstances.forEach((mainWrap) => {
+      const elements = {
+        mainWrap,
+        mainLink: mainWrap.querySelector('[data-drop-nav="main-link"]'),
+        childWrap: mainWrap.querySelector('[data-drop-nav="child-wrap"]'),
+        childLinks: mainWrap.querySelectorAll('[data-drop-nav="child-link"]'),
+      };
+
+      elements.mainLink.removeEventListener("click", handleMainLinkClick);
+      elements.mainWrap.removeEventListener("mouseleave", handleMainWrapLeave);
+      document.removeEventListener("click", handleDocumentClick);
+
+      // Clean up nav link animations
+      elements.childLinks.forEach((link) => {
+        link.removeEventListener("mouseenter", null);
+        link.removeEventListener("mouseleave", null);
+      });
+    });
 
     // Clean up nav link animations
     navLinks.forEach((link) => {
