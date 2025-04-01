@@ -8,6 +8,9 @@ export function initNav() {
   // If no nav instances found, return early
   if (!navInstances.length) return;
 
+  // Create a Map to store close functions for each nav instance
+  const closeDropdownFunctions = new Map();
+
   const animationSettings = {
     duration: 0.6,
     ease: "expo.out",
@@ -126,6 +129,9 @@ export function initNav() {
         });
     }
 
+    // Store the closeDropdown function in our Map
+    closeDropdownFunctions.set(mainWrap, closeDropdown);
+
     function toggleDropdown() {
       if (state.isOpen) {
         closeDropdown();
@@ -187,30 +193,21 @@ export function initNav() {
     elements.mainWrap.addEventListener("mouseleave", handleMainWrapLeave);
   });
 
-  // Single document click handler for all instances
+  // Update the document click handler to use the stored functions
   document.addEventListener("click", (event) => {
     navInstances.forEach((mainWrap) => {
       if (!mainWrap.contains(event.target)) {
-        const childWrap = mainWrap.querySelector(
-          '[data-drop-nav="child-wrap"]'
-        );
         const isOpen =
           mainWrap
             .querySelector('[data-drop-nav="main-link"]')
             ?.getAttribute("aria-expanded") === "true";
 
         if (isOpen) {
-          const elements = {
-            mainWrap,
-            childWrap,
-            childLinks: mainWrap.querySelectorAll(
-              '[data-drop-nav="child-link"]'
-            ),
-          };
-          closeDropdown.call({
-            elements,
-            state: { isOpen: true, isAnimating: false },
-          });
+          // Get the stored close function for this instance
+          const closeDropdown = closeDropdownFunctions.get(mainWrap);
+          if (closeDropdown) {
+            closeDropdown();
+          }
         }
       }
     });
@@ -281,6 +278,8 @@ export function initNav() {
         link.removeEventListener("mouseenter", null);
         link.removeEventListener("mouseleave", null);
       });
+
+      closeDropdownFunctions.delete(mainWrap); // Clean up the stored functions
     });
 
     // Clean up nav link animations
