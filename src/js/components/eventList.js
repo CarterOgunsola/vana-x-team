@@ -105,8 +105,8 @@ async function fetchEvents() {
       .map((event) => ({
         ...event,
         date: formatDate(event.date),
-        startTime: formatTime(event.start_at),
-        endTime: formatTime(event.end_at),
+        startTime: event.startTime,
+        endTime: event.endTime,
       }));
 
     const pastEvents = events
@@ -115,8 +115,8 @@ async function fetchEvents() {
       .map((event) => ({
         ...event,
         date: formatDate(event.date),
-        startTime: formatTime(event.start_at),
-        endTime: formatTime(event.end_at),
+        startTime: event.startTime,
+        endTime: event.endTime,
       }));
 
     return {
