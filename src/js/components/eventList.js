@@ -96,20 +96,33 @@ async function fetchEvents() {
           imageUrl: entry.event.cover_url || "default-image-url.jpg",
           isPast: isPast,
         };
-      })
-      .sort((a, b) => {
-        // Sort past events to the bottom
-        if (a.isPast && !b.isPast) return 1;
-        if (!a.isPast && b.isPast) return -1;
-        // For events with the same past/future status, sort by date
-        return a.date - b.date;
       });
 
-    // Format the date after sorting
-    return events.map((event) => ({
-      ...event,
-      date: formatDate(event.date),
-    }));
+    // Separate upcoming and past events
+    const upcomingEvents = events
+      .filter((event) => !event.isPast)
+      .sort((a, b) => a.date - b.date) // Ascending order - soonest first
+      .map((event) => ({
+        ...event,
+        date: formatDate(event.date),
+        startTime: formatTime(event.start_at),
+        endTime: formatTime(event.end_at),
+      }));
+
+    const pastEvents = events
+      .filter((event) => event.isPast)
+      .sort((a, b) => b.date - a.date) // Descending order - most recent first
+      .map((event) => ({
+        ...event,
+        date: formatDate(event.date),
+        startTime: formatTime(event.start_at),
+        endTime: formatTime(event.end_at),
+      }));
+
+    return {
+      upcoming: upcomingEvents,
+      past: pastEvents,
+    };
   } catch (error) {
     if (error instanceof APIError && error.status === 429) {
       console.error("Rate limit exceeded. Please try again later.");

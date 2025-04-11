@@ -1,7 +1,14 @@
 export function renderEvents(events) {
-  const listWrap = document.querySelector('[data-event="list-wrap"]');
-  if (!listWrap) {
-    console.error("List wrapper not found!");
+  // Get both list wrappers
+  const upcomingWrap = document.querySelector(
+    '[data-event="list-wrap"][data-event-upcoming]'
+  );
+  const pastWrap = document.querySelector(
+    '[data-event="list-wrap"][data-event-past]'
+  );
+
+  if (!upcomingWrap || !pastWrap) {
+    console.error("One or both list wrappers not found!");
     return;
   }
 
@@ -11,14 +18,17 @@ export function renderEvents(events) {
     return;
   }
 
-  // Remove only the dynamically added events
-  Array.from(listWrap.children).forEach((child) => {
-    if (child.hasAttribute("data-dynamic-event")) {
-      child.remove();
-    }
+  // Clear existing dynamic events from both wrappers
+  [upcomingWrap, pastWrap].forEach((wrapper) => {
+    Array.from(wrapper.children).forEach((child) => {
+      if (child.hasAttribute("data-dynamic-event")) {
+        child.remove();
+      }
+    });
   });
 
-  events.forEach((event) => {
+  // Helper function to render a single event card
+  const renderEventCard = (event) => {
     const eventCard = cardTemplate.cloneNode(true);
     eventCard.style.display = "block";
     eventCard.setAttribute("data-dynamic-event", "true");
@@ -39,7 +49,7 @@ export function renderEvents(events) {
     setTextContent("event-name", event.name);
     setTextContent(
       "event-date",
-      event.isPast ? `${event.date} — Past Event` : event.date
+      event.isPast ? `${event.date} (Past Event)` : event.date
     );
     setTextContent("location", event.location);
     setTextContent("event-start-time", event.startTime);
@@ -58,6 +68,18 @@ export function renderEvents(events) {
       imageElement.alt = event.name;
     }
 
-    listWrap.appendChild(eventCard);
+    return eventCard;
+  };
+
+  // Render upcoming events
+  events.upcoming.forEach((event) => {
+    const eventCard = renderEventCard(event);
+    upcomingWrap.appendChild(eventCard);
+  });
+
+  // Render past events
+  events.past.forEach((event) => {
+    const eventCard = renderEventCard(event);
+    pastWrap.appendChild(eventCard);
   });
 }
