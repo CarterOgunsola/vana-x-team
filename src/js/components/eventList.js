@@ -82,7 +82,7 @@ async function fetchEvents() {
 
     const now = new Date();
     const events = data.entries
-      .filter((entry) => entry.event)
+      .filter((entry) => entry.event && entry.event.visibility === "public")
       .map((entry) => {
         const eventDate = new Date(entry.event.start_at);
         const isPast = eventDate < now;
